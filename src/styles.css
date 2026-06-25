@@ -43,7 +43,7 @@ a {
   display: grid;
   grid-template-rows: auto 1fr auto;
   padding: 0 24px;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .cs__glow {
@@ -76,7 +76,7 @@ a {
   z-index: 1;
   display: flex;
   justify-content: center;
-  padding: 38px 0 0;
+  padding: 30px 0 0;
 }
 
 .cs__brand {
@@ -95,7 +95,7 @@ a {
   max-width: 740px;
   margin: 0 auto;
   text-align: center;
-  padding: 40px 0;
+  padding: 28px 0;
 }
 
 .cs__eyebrow {
@@ -104,15 +104,15 @@ a {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 22px;
+  margin-bottom: 18px;
   opacity: 0;
   animation: cs-rise 0.8s ease 0.05s forwards;
 }
 
 .cs__title {
-  font-size: clamp(2.6rem, 8vw, 5rem);
+  font-size: clamp(2.2rem, 6vw, 4rem);
   font-weight: 600;
-  line-height: 1.04;
+  line-height: 1.05;
   letter-spacing: -0.025em;
   background: linear-gradient(180deg, #ffffff 0%, #c7c7cc 100%);
   -webkit-background-clip: text;
@@ -131,8 +131,8 @@ a {
 
 .cs__lead {
   max-width: 520px;
-  margin: 26px auto 0;
-  font-size: 1.12rem;
+  margin: 20px auto 0;
+  font-size: 1.08rem;
   line-height: 1.55;
   color: var(--muted);
   opacity: 0;
@@ -144,7 +144,7 @@ a {
   display: flex;
   gap: 10px;
   max-width: 460px;
-  margin: 38px auto 0;
+  margin: 30px auto 0;
   opacity: 0;
   animation: cs-rise 0.9s ease 0.4s forwards;
 }
@@ -219,10 +219,11 @@ a {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 30px 0 38px;
+  gap: 8px 12px;
+  padding: 22px 0 28px;
   font-size: 0.88rem;
   color: var(--muted);
+  text-align: center;
 }
 
 .cs__foot a {
@@ -255,6 +256,29 @@ a {
   .cs__lead {
     font-size: 1.04rem;
   }
+  .cs__brand {
+    font-size: 0.74rem;
+    letter-spacing: 0.34em;
+    padding-left: 0.34em;
+  }
+}
+
+/* Pantallas de poca altura (laptops, ventanas reducidas): compactar para que
+   el footer (contacto · Santiago) nunca quede fuera de la pantalla. */
+@media (max-height: 780px) {
+  .cs__top { padding-top: 22px; }
+  .cs__hero { padding: 16px 0; }
+  .cs__title { font-size: clamp(2rem, 5.2vw, 3.2rem); }
+  .cs__eyebrow { margin-bottom: 14px; }
+  .cs__lead { margin-top: 16px; font-size: 1rem; }
+  .cs__form { margin-top: 22px; }
+  .cs__foot { padding: 16px 0 22px; }
+}
+
+@media (max-height: 640px) {
+  .cs__title { font-size: clamp(1.8rem, 4.6vw, 2.6rem); }
+  .cs__lead { font-size: 0.95rem; }
+  .cs__hero { padding: 10px 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
