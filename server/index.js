@@ -10,6 +10,14 @@ import fs from 'node:fs'
 
 dotenv.config()
 
+// Cualquier error no manejado queda en los registros en vez de tumbar el proceso.
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err)
+})
+process.on('unhandledRejection', (err) => {
+  console.error('[unhandledRejection]', err)
+})
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const distDir = path.join(__dirname, '..', 'dist')
 
@@ -113,7 +121,10 @@ if (fs.existsSync(distDir)) {
 }
 
 const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
-  console.log(`Black Carpet escuchando en http://localhost:${PORT}`)
-  console.log(`SMTP ${transporter ? 'configurado ✔' : 'NO configurado (modo log)'}`)
+const server = app.listen(PORT, () => {
+  console.log(`Black Carpet escuchando en el puerto ${PORT}`)
+  console.log(`Sirviendo dist: ${fs.existsSync(distDir)} · SMTP: ${transporter ? 'sí' : 'modo log'}`)
+})
+server.on('error', (err) => {
+  console.error('[server.listen error]', err)
 })
