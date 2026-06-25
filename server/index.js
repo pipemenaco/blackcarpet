@@ -121,7 +121,10 @@ if (fs.existsSync(distDir)) {
 }
 
 const PORT = process.env.PORT || 3000
-const server = app.listen(PORT, () => {
+// Enlazar a 0.0.0.0 (todas las interfaces IPv4) para que el proxy inverso de
+// Hostinger pueda alcanzar la app. Sin esto Node puede enlazar solo a IPv6 (::)
+// y el proxy (IPv4 127.0.0.1) recibe "connection refused" → 503.
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Black Carpet escuchando en el puerto ${PORT}`)
   console.log(`Sirviendo dist: ${fs.existsSync(distDir)} · SMTP: ${transporter ? 'sí' : 'modo log'}`)
 })
