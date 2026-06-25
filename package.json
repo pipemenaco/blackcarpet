@@ -2,7 +2,6 @@
   "name": "blackcarpet",
   "version": "1.0.0",
   "description": "Sitio web de Black Carpet — productora de eventos inmersivos",
-  "type": "module",
   "engines": {
     "node": ">=18"
   },

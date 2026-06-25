@@ -1,14 +1,16 @@
-import express from 'express'
-import cors from 'cors'
-import compression from 'compression'
-import rateLimit from 'express-rate-limit'
-import nodemailer from 'nodemailer'
-import dotenv from 'dotenv'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import fs from 'node:fs'
-
-dotenv.config()
+// CommonJS a propósito: el hosting Node de Hostinger (LiteSpeed lsnode) inyecta
+// un preload CommonJS vía NODE_OPTIONS --require. Si el proyecto declara
+// "type": "module", Node trata ese preload como ESM y falla con ERR_REQUIRE_ESM
+// → la app no arranca (503). Por eso el backend va en CommonJS y package.json
+// NO usa "type": "module".
+const express = require('express')
+const cors = require('cors')
+const compression = require('compression')
+const rateLimit = require('express-rate-limit')
+const nodemailer = require('nodemailer')
+const path = require('node:path')
+const fs = require('node:fs')
+require('dotenv').config()
 
 // Cualquier error no manejado queda en los registros en vez de tumbar el proceso.
 process.on('uncaughtException', (err) => {
@@ -18,7 +20,6 @@ process.on('unhandledRejection', (err) => {
   console.error('[unhandledRejection]', err)
 })
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const distDir = path.join(__dirname, '..', 'dist')
 
 const app = express()
@@ -29,11 +30,11 @@ app.use(cors())
 
 // --- Configuración del transporte SMTP ---
 function buildTransport() {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env
+  const { SMTP_HOST, SMTP_USER, SMTP_PASS } = process.env
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return null
   return nodemailer.createTransport({
     host: SMTP_HOST,
-    port: Number(SMTP_PORT || 465),
+    port: Number(process.env.SMTP_PORT || 465),
     secure: String(process.env.SMTP_SECURE || 'true') === 'true',
     auth: { user: SMTP_USER, pass: SMTP_PASS },
   })
@@ -120,11 +121,10 @@ if (fs.existsSync(distDir)) {
   })
 }
 
+// lsnode/Passenger asigna el puerto vía process.env.PORT; dejamos que Node use
+// el binding por defecto (sin host explícito) para no interferir con lsnode.
 const PORT = process.env.PORT || 3000
-// Enlazar a 0.0.0.0 (todas las interfaces IPv4) para que el proxy inverso de
-// Hostinger pueda alcanzar la app. Sin esto Node puede enlazar solo a IPv6 (::)
-// y el proxy (IPv4 127.0.0.1) recibe "connection refused" → 503.
-const server = app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, () => {
   console.log(`Black Carpet escuchando en el puerto ${PORT}`)
   console.log(`Sirviendo dist: ${fs.existsSync(distDir)} · SMTP: ${transporter ? 'sí' : 'modo log'}`)
 })
